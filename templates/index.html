@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OSINT Username Tracker</title>
+    <style>
+        body {
+            background: #101820;
+            color: #39ff14;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 2em auto;
+            background: rgba(20, 30, 40, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 0 24px #39ff14, 0 0 8px #00eaff;
+            padding: 2em 2.5em 2em 2.5em;
+        }
+        h1 {
+            color: #00eaff;
+            text-shadow: 0 0 8px #39ff14, 0 0 2px #00eaff;
+            font-size: 2.2em;
+            letter-spacing: 2px;
+            margin-bottom: 0.5em;
+        }
+        label, input, button {
+            font-size: 1.1em;
+        }
+        input[type=text] {
+            background: #181f2a;
+            color: #39ff14;
+            border: 1px solid #00eaff;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-right: 8px;
+            outline: none;
+        }
+        button {
+            background: #00eaff;
+            color: #101820;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-weight: bold;
+            box-shadow: 0 0 8px #00eaff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #39ff14;
+            color: #101820;
+            box-shadow: 0 0 12px #39ff14;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5em;
+            background: #181f2a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #00eaff33;
+        }
+        th {
+            color: #00eaff;
+            background: #101820;
+            font-size: 1.1em;
+        }
+        .found {
+            color: #39ff14;
+            font-weight: bold;
+            text-shadow: 0 0 4px #39ff14;
+        }
+        .notfound {
+            color: #ff1744;
+            font-weight: bold;
+            text-shadow: 0 0 4px #ff1744;
+        }
+        .score {
+            color: #fff;
+            font-size: 0.95em;
+            background: #00eaff33;
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin-left: 6px;
+        }
+        .export-btns {
+            margin-top: 1.5em;
+        }
+        .export-btns button {
+            margin-right: 10px;
+            background: #181f2a;
+            color: #00eaff;
+            border: 1px solid #00eaff;
+            box-shadow: none;
+        }
+        .export-btns button:hover {
+            background: #00eaff;
+            color: #101820;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>&#128273; OSINT Username Tracker</h1>
+        <form method="post" action="/scan">
+            <label for="username">Enter Username:</label>
+            <input type="text" id="username" name="username" required value="{{ username if username else '' }}">
+            <button type="submit">Scan</button>
+        </form>
+        {% if results is not none %}
+            <div class="export-btns">
+                <form method="post" action="/export" style="display:inline">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <input type="hidden" name="format" value="json">
+                    <button type="submit">Export JSON</button>
+                </form>
+                <form method="post" action="/export" style="display:inline">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <input type="hidden" name="format" value="csv">
+                    <button type="submit">Export CSV</button>
+                </form>
+                <form method="post" action="/export" style="display:inline">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <input type="hidden" name="format" value="txt">
+                    <button type="submit">Export TXT</button>
+                </form>
+            </div>
+            <h2>Results for '{{ username }}'</h2>
+            <table>
+                <tr>
+                    <th>Platform</th>
+                    <th>Status</th>
+                    <th>Profile Link</th>
+                </tr>
+                {% for platform, url, found, metadata in results %}
+                <tr>
+                    <td>{{ platform }}</td>
+                    <td class="{{ 'found' if found else 'notfound' }}">{{ '✓ Found' if found else '✗ Not Found' }}</td>
+                    <td>{% if found %}<a href="{{ url }}" target="_blank">Visit</a>{% else %}-{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html> 
