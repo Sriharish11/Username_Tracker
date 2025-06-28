@@ -16,8 +16,6 @@ Username_Tracker is a simple yet powerful OSINT tool that helps you search for a
 bash
 Copy
 Edit
-# Clone the repository
-git clone https://github.com/yourusername/Username_Tracker.git
 
 # Navigate into the project directory
 cd Username_Tracker
